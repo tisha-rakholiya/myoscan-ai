@@ -24,7 +24,7 @@ def scan():
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return "MyoScan AI is running!"
 
 
 @app.route("/result", methods=["POST"])
