@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyoScan AI — Your Risk Assessment</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #F4FAF9; min-height: 100vh; }
+
+        .header {
+            background: linear-gradient(135deg, #0B3D3D 0%, #028090 100%);
+            padding: 22px 40px;
+        }
+        .logo { font-size: 26px; font-weight: bold; color: #fff; }
+        .logo span { color: #02C39A; }
+        .tagline { color: #A0D8D3; font-size: 13px; margin-top: 3px; }
+
+        .container { max-width: 700px; margin: 36px auto; padding: 0 20px 60px; }
+
+        .hero {
+            background: #fff; border-radius: 16px;
+            padding: 36px; text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .greeting { font-size: 15px; color: #5B7470; margin-bottom: 6px; }
+
+        .risk-badge {
+            display: inline-block;
+            font-size: 36px; font-weight: bold;
+            padding: 12px 44px; border-radius: 60px;
+            margin: 18px 0; color: #fff;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+
+        .risk-msg {
+            font-size: 15px; color: #1E2A2A;
+            line-height: 1.65; max-width: 480px;
+            margin: 0 auto 16px;
+        }
+
+        .conf-pill {
+            display: inline-block;
+            background: #F4FAF9; border: 1.5px solid #D1E8E5;
+            border-radius: 30px; padding: 6px 20px;
+            font-size: 13px; color: #5B7470;
+        }
+        .conf-pill strong { color: #028090; }
+
+        .card {
+            background: #fff; border-radius: 12px;
+            padding: 24px 28px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            margin-bottom: 18px;
+        }
+        .card-title {
+            font-size: 15px; font-weight: bold;
+            color: #0B3D3D; margin-bottom: 14px;
+        }
+
+        .advice-box {
+            padding: 13px 16px; border-radius: 8px;
+            font-size: 14px; line-height: 1.65;
+            font-style: italic; margin-bottom: 18px;
+        }
+
+        .steps-list { list-style: none; }
+        .steps-list li {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 11px 0; border-bottom: 1px solid #F0F7F6;
+            font-size: 13.5px; color: #1E2A2A; line-height: 1.5;
+        }
+        .steps-list li:last-child { border-bottom: none; }
+        .tick { color: #02C39A; font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .detail-box { background: #F4FAF9; border-radius: 8px; padding: 12px 16px; }
+        .detail-label { font-size: 11px; color: #9FC9C3; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .detail-val { font-size: 14px; font-weight: 600; color: #0B3D3D; }
+
+        .disclaimer-box {
+            background: #FFF8E1; border-radius: 10px;
+            padding: 13px 18px; font-size: 12px;
+            color: #92400E; line-height: 1.6; margin-bottom: 18px;
+        }
+
+        .btn-back {
+            display: block; width: 100%; padding: 15px;
+            background: linear-gradient(135deg, #028090, #02C39A);
+            color: #fff; text-align: center; border-radius: 10px;
+            text-decoration: none; font-size: 15px; font-weight: bold;
+        }
+        .btn-back:hover { opacity: 0.9; }
+
+        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #9FC9C3; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">Myo<span>Scan</span> AI</div>
+    <div class="tagline">AI-Assisted Muscle Injury Risk Screening Tool</div>
+</div>
+
+<div class="container">
+
+    <div class="hero">
+        <div class="greeting">
+            {% if name %}Hi <strong>{{ name }}</strong>, your{% else %}Your{% endif %} assessment results are ready
+        </div>
+
+        <div class="risk-badge" style="background: {{ risk_color }};">
+            {{ emoji }} {{ risk_level }} RISK
+        </div>
+
+        <p class="risk-msg">{{ message }}</p>
+
+        <div class="conf-pill">
+            Model confidence: <strong>{{ confidence }}%</strong>
+        </div>
+    </div>
+    <div class="card">
+    <div class="card-title">📊 Risk Probability Breakdown</div>
+    <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+        <span style="width:95px;font-size:13px;">🟢 Low</span>
+        <div style="flex:1;background:#E0F2F0;border-radius:4px;height:22px;">
+            <div style="width:{{low_prob}}%;background:#02C39A;height:22px;border-radius:4px;transition:width 1s;"></div>
+        </div>
+        <span style="font-size:13px;font-weight:bold;color:#02C39A;width:48px;">{{low_prob}}%</span>
+    </div>
+    <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+        <span style="width:95px;font-size:13px;">🟡 Moderate</span>
+        <div style="flex:1;background:#FEF3C7;border-radius:4px;height:22px;">
+            <div style="width:{{mod_prob}}%;background:#F59E0B;height:22px;border-radius:4px;transition:width 1s;"></div>
+        </div>
+        <span style="font-size:13px;font-weight:bold;color:#F59E0B;width:48px;">{{mod_prob}}%</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:95px;font-size:13px;">🔴 High</span>
+        <div style="flex:1;background:#FEE2E2;border-radius:4px;height:22px;">
+            <div style="width:{{high_prob}}%;background:#EF4444;height:22px;border-radius:4px;transition:width 1s;"></div>
+        </div>
+        <span style="font-size:13px;font-weight:bold;color:#EF4444;width:48px;">{{high_prob}}%</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-title">🧠 Why this prediction? (Explainable AI)</div>
+    <p style="font-size:12.5px;color:#5B7470;margin-bottom:14px;">
+        Key factors the model used for this assessment:
+    </p>
+    {% for fname, fpct in top_factors %}
+    <div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+            <span style="font-weight:600;color:#0B3D3D;">{{ fname }}</span>
+            <span style="color:#028090;font-weight:bold;">{{ fpct }}%</span>
+        </div>
+        <div style="background:#E0F2F0;border-radius:4px;height:10px;">
+            <div style="width:{{ fpct * 4 }}%;background:{{ risk_color }};height:10px;border-radius:4px;"></div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+    <div class="card">
+        <div class="card-title">🩺 Medical Advice</div>
+        <div class="advice-box" style="background: {{ risk_bg }}; border-left: 3px solid {{ risk_color }}; color: #1E2A2A;">
+            {{ advice }}
+        </div>
+
+        <div class="card-title">📋 Recommended Steps</div>
+        <ul class="steps-list">
+            {% for step in steps %}
+            <li><span class="tick">✓</span> {{ step }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="card">
+        <div class="card-title">📊 Assessment Summary</div>
+        <div class="grid2">
+            <div class="detail-box">
+                <div class="detail-label">Body Location</div>
+                <div class="detail-val">{{ location }}</div>
+            </div>
+            <div class="detail-box">
+                <div class="detail-label">Risk Level</div>
+                <div class="detail-val" style="color: {{ risk_color }}">{{ risk_level }}</div>
+            </div>
+            <div class="detail-box">
+                <div class="detail-label">AI Confidence</div>
+                <div class="detail-val">{{ confidence }}%</div>
+            </div>
+            <div class="detail-box">
+                <div class="detail-label">Model Used</div>
+                <div class="detail-val">Random Forest</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="disclaimer-box">
+        ⚠️ <strong>Disclaimer:</strong> MyoScan AI gives a preliminary risk indication only — it is <strong>not a substitute for medical diagnosis</strong>. Always consult a qualified doctor for any health concern.
+    </div>
+
+    <a href="/" class="btn-back">🔄 Take Another Assessment</a>
+
+    <div class="footer">
+        MyoScan AI &bull; Team Code Catalyst &bull; Bharat Academix CodeQuest 2026
+    </div>
+
+</div>
+</body>
+</html>

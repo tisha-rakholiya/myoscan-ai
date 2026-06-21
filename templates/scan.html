@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyoScan AI — Movement Scanner</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:Arial,sans-serif; background:#0B3D3D; min-height:100vh; }
+        .header { background:linear-gradient(135deg,#0B3D3D,#028090); padding:20px 40px; }
+        .logo { font-size:24px; font-weight:bold; color:#fff; }
+        .logo span { color:#02C39A; }
+        .tagline { color:#A0D8D3; font-size:13px; }
+        .container { max-width:900px; margin:30px auto; padding:0 20px; }
+        .scan-card { background:#fff; border-radius:16px; padding:28px; box-shadow:0 8px 32px rgba(0,0,0,0.3); }
+        .scan-title { font-size:20px; font-weight:bold; color:#0B3D3D; margin-bottom:6px; }
+        .scan-sub { color:#5B7470; font-size:13.5px; margin-bottom:20px; }
+        .video-wrap { position:relative; width:100%; max-width:640px; margin:0 auto 20px; }
+        #output { width:100%; border-radius:12px; }
+        #webcam { display:none; }
+        .angles-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:20px; }
+        .angle-box { background:#F4FAF9; border-radius:10px; padding:14px; text-align:center; border:1.5px solid #D1E8E5; }
+        .angle-label { font-size:11px; color:#9FC9C3; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+        .angle-val { font-size:28px; font-weight:bold; color:#028090; }
+        .angle-unit { font-size:13px; color:#5B7470; }
+        .status { text-align:center; padding:10px; background:#E8FAF7; border-radius:8px; color:#028090; font-weight:bold; margin-bottom:16px; }
+        .btn { display:inline-block; padding:13px 32px; background:linear-gradient(135deg,#028090,#02C39A); color:#fff; border:none; border-radius:10px; font-size:15px; font-weight:bold; cursor:pointer; text-decoration:none; }
+        .btn-outline { background:transparent; border:2px solid #028090; color:#028090; margin-left:10px; }
+        .instructions { background:#FFF8E1; border-radius:10px; padding:14px 18px; font-size:13px; color:#92400E; margin-bottom:18px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">Myo<span>Scan</span> AI</div>
+    <div class="tagline">AI Movement Analysis — Powered by MediaPipe</div>
+</div>
+
+<div class="container">
+    <div class="scan-card">
+        <div class="scan-title">📷 Real-Time Movement Analysis</div>
+        <div class="scan-sub">Camera se joint angles detect karein — muscle movement assessment ke liye</div>
+
+        <div class="instructions">
+            📌 <strong>Instructions:</strong> Camera ON hone ke baad — apna affected arm/leg move karein.
+            Shoulder raise karein, elbow bend karein ya knee flex karein. Angles automatically detect honge.
+        </div>
+
+        <div id="status" class="status">⏳ Camera start ho rahi hai...</div>
+
+        <div class="video-wrap">
+            <video id="webcam" autoplay playsinline></video>
+            <canvas id="output"></canvas>
+        </div>
+
+        <div class="angles-grid">
+            <div class="angle-box">
+                <div class="angle-label">Left Shoulder</div>
+                <div class="angle-val" id="lShoulder">--</div>
+                <div class="angle-unit">degrees</div>
+            </div>
+            <div class="angle-box">
+                <div class="angle-label">Right Shoulder</div>
+                <div class="angle-val" id="rShoulder">--</div>
+                <div class="angle-unit">degrees</div>
+            </div>
+            <div class="angle-box">
+                <div class="angle-label">Left Elbow</div>
+                <div class="angle-val" id="lElbow">--</div>
+                <div class="angle-unit">degrees</div>
+            </div>
+            <div class="angle-box">
+                <div class="angle-label">Right Elbow</div>
+                <div class="angle-val" id="rElbow">--</div>
+                <div class="angle-unit">degrees</div>
+            </div>
+            <div class="angle-box">
+                <div class="angle-label">Left Knee</div>
+                <div class="angle-val" id="lKnee">--</div>
+                <div class="angle-unit">degrees</div>
+            </div>
+            <div class="angle-box">
+                <div class="angle-label">Right Knee</div>
+                <div class="angle-val" id="rKnee">--</div>
+                <div class="angle-unit">degrees</div>
+            </div>
+        </div>
+
+        <div style="text-align:center;">
+            <a href="/" class="btn">📋 Go to Symptom Assessment</a>
+            <button class="btn btn-outline" onclick="location.reload()">🔄 Restart Camera</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+
+<script>
+const video   = document.getElementById('webcam');
+const canvas  = document.getElementById('output');
+const ctx     = canvas.getContext('2d');
+const status  = document.getElementById('status');
+
+function angle(a, b, c) {
+    const r = Math.atan2(c.y-b.y, c.x-b.x) - Math.atan2(a.y-b.y, a.x-b.x);
+    let deg = Math.abs(r * 180 / Math.PI);
+    if (deg > 180) deg = 360 - deg;
+    return Math.round(deg);
+}
+
+const pose = new Pose({
+    locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}`
+});
+pose.setOptions({ modelComplexity:1, smoothLandmarks:true, minDetectionConfidence:0.5, minTrackingConfidence:0.5 });
+
+pose.onResults(res => {
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(res.image, 0, 0, canvas.width, canvas.height);
+
+    if (res.poseLandmarks) {
+        drawConnectors(ctx, res.poseLandmarks, POSE_CONNECTIONS, {color:'#02C39A', lineWidth:3});
+        drawLandmarks(ctx, res.poseLandmarks, {color:'#028090', lineWidth:2, radius:4});
+
+        const lm = res.poseLandmarks;
+        document.getElementById('lShoulder').textContent = angle(lm[23],lm[11],lm[13]);
+        document.getElementById('rShoulder').textContent = angle(lm[24],lm[12],lm[14]);
+        document.getElementById('lElbow').textContent    = angle(lm[11],lm[13],lm[15]);
+        document.getElementById('rElbow').textContent    = angle(lm[12],lm[14],lm[16]);
+        document.getElementById('lKnee').textContent     = angle(lm[23],lm[25],lm[27]);
+        document.getElementById('rKnee').textContent     = angle(lm[24],lm[26],lm[28]);
+        status.textContent = '✅ Pose detected — joint angles live!';
+        status.style.background = '#E8FAF7';
+    }
+});
+
+const camera = new Camera(video, {
+    onFrame: async () => { await pose.send({image: video}); },
+    width: 640, height: 480
+});
+camera.start().then(() => {
+    status.textContent = '📸 Camera active — move in front of camera';
+});
+</script>
+</body>
+</html>

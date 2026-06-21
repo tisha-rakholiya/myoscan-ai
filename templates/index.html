@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyoScan AI — Muscle Injury Risk Screening</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #F4FAF9; min-height: 100vh; }
+
+        .header {
+            background: linear-gradient(135deg, #0B3D3D 0%, #028090 100%);
+            padding: 22px 40px;
+        }
+        .logo { font-size: 26px; font-weight: bold; color: #fff; letter-spacing: 0.5px; }
+        .logo span { color: #02C39A; }
+        .tagline { color: #A0D8D3; font-size: 13px; margin-top: 3px; }
+
+        .container { max-width: 740px; margin: 36px auto; padding: 0 20px 60px; }
+
+        .intro-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 22px 26px;
+            margin-bottom: 22px;
+            border-left: 4px solid #028090;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .intro-card h2 { color: #028090; margin-bottom: 8px; font-size: 17px; }
+        .intro-card p { color: #5B7470; font-size: 13.5px; line-height: 1.65; }
+        .disclaimer {
+            background: #FFF8E1; border-radius: 8px;
+            padding: 10px 14px; margin-top: 12px;
+            font-size: 12px; color: #92400E; line-height: 1.5;
+        }
+
+        .form-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px 32px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        }
+        .form-section { margin-bottom: 26px; }
+        .section-title {
+            font-size: 15px; font-weight: bold; color: #0B3D3D;
+            margin-bottom: 16px; padding-bottom: 8px;
+            border-bottom: 2px solid #E0F2F0;
+        }
+        .form-group { margin-bottom: 18px; }
+        label.field-label {
+            display: block; font-size: 13.5px;
+            font-weight: 600; color: #1E2A2A; margin-bottom: 8px;
+        }
+        input[type="text"], select {
+            width: 100%; padding: 10px 13px;
+            border: 1.5px solid #D1E8E5; border-radius: 8px;
+            font-size: 14px; color: #1E2A2A; background: #fff;
+        }
+        input[type="text"]:focus, select:focus {
+            outline: none; border-color: #028090;
+        }
+
+        /* Slider */
+        .slider-wrap { display: flex; align-items: center; gap: 14px; }
+        input[type="range"] {
+            flex: 1; -webkit-appearance: none;
+            height: 7px; border-radius: 4px; outline: none;
+            background: linear-gradient(to right, #028090 50%, #D1E8E5 50%);
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 22px; height: 22px;
+            border-radius: 50%; background: #028090; cursor: pointer;
+            box-shadow: 0 2px 6px rgba(2,128,144,0.35);
+        }
+        .slider-val {
+            font-size: 22px; font-weight: bold; color: #028090;
+            min-width: 32px; text-align: center;
+        }
+        .slider-hints { display: flex; justify-content: space-between; font-size: 11px; color: #9FC9C3; margin-top: 5px; }
+
+        /* Radio grid */
+        .radio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .radio-opt {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px; border: 1.5px solid #D1E8E5;
+            border-radius: 8px; cursor: pointer; transition: all 0.15s;
+        }
+        .radio-opt:hover { border-color: #028090; background: #F0FAF9; }
+        .radio-opt input[type="radio"] { accent-color: #028090; width: 15px; height: 15px; flex-shrink: 0; }
+        .radio-opt span { font-size: 13.5px; color: #1E2A2A; }
+        .radio-opt.chosen { border-color: #028090; background: #E8FAF7; }
+
+        <div class="form-section">
+    <div class="section-title">👤 Personal Details</div>
+
+    <div class="form-group">
+        <label class="field-label">Age</label>
+        <input type="number" name="age" min="1" max="100" placeholder="Enter your age" required
+               style="width:100%;padding:10px 13px;border:1.5px solid #D1E8E5;border-radius:8px;font-size:14px;">
+    </div>
+
+    <div class="form-group">
+        <label class="field-label">Previous Injury at this location?</label>
+        <div class="radio-grid">
+            <label class="radio-opt"><input type="radio" name="previous_injury" value="0" required><span>❌ No</span></label>
+            <label class="radio-opt"><input type="radio" name="previous_injury" value="1"><span>✅ Yes, before</span></label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="field-label">Activity Level</label>
+        <div class="radio-grid">
+            <label class="radio-opt"><input type="radio" name="activity_level" value="0" required><span>💺 Sedentary</span></label>
+            <label class="radio-opt"><input type="radio" name="activity_level" value="1"><span>🚶 Light Active</span></label>
+            <label class="radio-opt"><input type="radio" name="activity_level" value="2"><span>🏃 Moderate</span></label>
+            <label class="radio-opt"><input type="radio" name="activity_level" value="3"><span>💪 Very Active</span></label>
+        </div>
+    </div>
+</div>
+
+        .submit-btn {
+            width: 100%; padding: 15px;
+            background: linear-gradient(135deg, #028090, #02C39A);
+            color: #fff; border: none; border-radius: 10px;
+            font-size: 16px; font-weight: bold;
+            cursor: pointer; letter-spacing: 0.3px; transition: opacity 0.2s;
+        }
+        .submit-btn:hover { opacity: 0.9; }
+
+        .footer {
+            text-align: center; margin-top: 22px;
+            font-size: 12px; color: #9FC9C3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">Myo<span>Scan</span> AI</div>
+    <div class="tagline">AI-Assisted Muscle Injury Risk Screening Tool</div>
+</div>
+<div style="text-align:center;margin-bottom:16px;">
+    <a href="/scan" style="display:inline-block;padding:10px 24px;background:#0B3D3D;color:#02C39A;border-radius:8px;text-decoration:none;font-size:14px;font-weight:bold;">
+        📷 Try Movement Scanner (Beta)
+    </a>
+</div>
+<div class="container">
+
+    <div class="intro-card">
+        <h2>🩺 How This Works</h2>
+        <p>Answer a few simple questions about your symptoms. Our AI model analyzes your inputs and gives a preliminary muscle injury risk assessment in under 2 minutes — completely free, no hospital visit required.</p>
+        <div class="disclaimer">
+            ⚠️ <strong>Important:</strong> This is a screening tool only — not a medical diagnosis. Always consult a qualified doctor for any health concern.
+        </div>
+    </div>
+
+    <div class="form-card">
+        <form action="/result" method="POST">
+
+            <!-- Section 1: Basic Info -->
+            <div class="form-section">
+                <div class="section-title">👤 Basic Information</div>
+
+                <div class="form-group">
+                    <label class="field-label">Your Name <span style="font-weight:400;color:#9FC9C3">(optional)</span></label>
+                    <input type="text" name="name" placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">Body Location Affected</label>
+                    <select name="location" required>
+                        <option value="">-- Select body part --</option>
+                        <option>Neck / Shoulder</option>
+                        <option>Upper Arm</option>
+                        <option>Lower Arm / Wrist</option>
+                        <option>Upper Back</option>
+                        <option>Lower Back</option>
+                        <option>Hip / Thigh</option>
+                        <option>Knee</option>
+                        <option>Calf / Shin</option>
+                        <option>Ankle / Foot</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Section 2: Pain -->
+            <div class="form-section">
+                <div class="section-title">🔥 Pain Details</div>
+
+                <div class="form-group">
+                    <label class="field-label">Pain Intensity &nbsp;<span style="font-weight:400;color:#9FC9C3">(1 = very mild, 10 = unbearable)</span></label>
+                    <div class="slider-wrap">
+                        <input type="range" name="pain_intensity" id="painSlider" min="1" max="10" value="5" oninput="updateSlider(this)">
+                        <div class="slider-val" id="painVal">5</div>
+                    </div>
+                    <div class="slider-hints"><span>Mild (1)</span><span>Moderate (5)</span><span>Severe (10)</span></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">Type of Pain</label>
+                    <div class="radio-grid">
+                        <label class="radio-opt"><input type="radio" name="pain_type" value="0" required><span>😶 Dull / Aching</span></label>
+                        <label class="radio-opt"><input type="radio" name="pain_type" value="1"><span>⚡ Sharp / Stabbing</span></label>
+                        <label class="radio-opt"><input type="radio" name="pain_type" value="2"><span>🔥 Burning</span></label>
+                        <label class="radio-opt"><input type="radio" name="pain_type" value="3"><span>💗 Throbbing</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Physical Symptoms -->
+            <div class="form-section">
+                <div class="section-title">🦵 Physical Symptoms</div>
+
+                <div class="form-group">
+                    <label class="field-label">Swelling around the affected area</label>
+                    <div class="radio-grid">
+                        <label class="radio-opt"><input type="radio" name="swelling" value="0" required><span>✅ None</span></label>
+                        <label class="radio-opt"><input type="radio" name="swelling" value="1"><span>🟡 Mild</span></label>
+                        <label class="radio-opt"><input type="radio" name="swelling" value="2"><span>🟠 Moderate</span></label>
+                        <label class="radio-opt"><input type="radio" name="swelling" value="3"><span>🔴 Severe</span></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">Muscle Weakness / Difficulty using the muscle</label>
+                    <div class="radio-grid">
+                        <label class="radio-opt"><input type="radio" name="weakness" value="0" required><span>✅ None</span></label>
+                        <label class="radio-opt"><input type="radio" name="weakness" value="1"><span>🟡 Mild</span></label>
+                        <label class="radio-opt"><input type="radio" name="weakness" value="2"><span>🟠 Moderate</span></label>
+                        <label class="radio-opt"><input type="radio" name="weakness" value="3"><span>🔴 Severe</span></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label">Movement Limitation / Reduced range of motion</label>
+                    <div class="radio-grid">
+                        <label class="radio-opt"><input type="radio" name="movement_limit" value="0" required><span>✅ None</span></label>
+                        <label class="radio-opt"><input type="radio" name="movement_limit" value="1"><span>🟡 Mild</span></label>
+                        <label class="radio-opt"><input type="radio" name="movement_limit" value="2"><span>🟠 Moderate</span></label>
+                        <label class="radio-opt"><input type="radio" name="movement_limit" value="3"><span>🔴 Severe</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Duration -->
+            <div class="form-section">
+                <div class="section-title">⏱️ Duration</div>
+                <div class="form-group">
+                    <label class="field-label">How long have you had these symptoms?</label>
+                    <div class="radio-grid">
+                        <label class="radio-opt"><input type="radio" name="duration" value="0" required><span>⏰ Less than 24 hours</span></label>
+                        <label class="radio-opt"><input type="radio" name="duration" value="1"><span>📅 1 to 3 days</span></label>
+                        <label class="radio-opt"><input type="radio" name="duration" value="2"><span>📆 More than 3 days</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">🔍 Analyze My Symptoms</button>
+        </form>
+    </div>
+
+    <div class="footer">
+        MyoScan AI &bull; Team Code Catalyst &bull; Bharat Academix CodeQuest 2026<br>
+        For screening purposes only. Not a substitute for professional medical advice.
+    </div>
+</div>
+
+<script>
+function updateSlider(el) {
+    document.getElementById('painVal').textContent = el.value;
+    const pct = (el.value - 1) / 9 * 100;
+    el.style.background = `linear-gradient(to right, #028090 ${pct}%, #D1E8E5 ${pct}%)`;
+}
+
+document.querySelectorAll('.radio-opt input[type="radio"]').forEach(r => {
+    r.addEventListener('change', function () {
+        const name = this.name;
+        document.querySelectorAll(`input[name="${name}"]`).forEach(x => {
+            x.closest('.radio-opt').classList.remove('chosen');
+        });
+        this.closest('.radio-opt').classList.add('chosen');
+    });
+});
+</script>
+
+</body>
+</html>
