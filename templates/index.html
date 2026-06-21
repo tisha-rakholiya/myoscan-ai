@@ -51,12 +51,12 @@
             display: block; font-size: 13.5px;
             font-weight: 600; color: #1E2A2A; margin-bottom: 8px;
         }
-        input[type="text"], select {
+        input[type="text"],input[type="number"],select {
             width: 100%; padding: 10px 13px;
             border: 1.5px solid #D1E8E5; border-radius: 8px;
             font-size: 14px; color: #1E2A2A; background: #fff;
         }
-        input[type="text"]:focus, select:focus {
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
             outline: none; border-color: #028090;
         }
 
@@ -90,35 +90,6 @@
         .radio-opt input[type="radio"] { accent-color: #028090; width: 15px; height: 15px; flex-shrink: 0; }
         .radio-opt span { font-size: 13.5px; color: #1E2A2A; }
         .radio-opt.chosen { border-color: #028090; background: #E8FAF7; }
-
-        <div class="form-section">
-    <div class="section-title">👤 Personal Details</div>
-
-    <div class="form-group">
-        <label class="field-label">Age</label>
-        <input type="number" name="age" min="1" max="100" placeholder="Enter your age" required
-               style="width:100%;padding:10px 13px;border:1.5px solid #D1E8E5;border-radius:8px;font-size:14px;">
-    </div>
-
-    <div class="form-group">
-        <label class="field-label">Previous Injury at this location?</label>
-        <div class="radio-grid">
-            <label class="radio-opt"><input type="radio" name="previous_injury" value="0" required><span>❌ No</span></label>
-            <label class="radio-opt"><input type="radio" name="previous_injury" value="1"><span>✅ Yes, before</span></label>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="field-label">Activity Level</label>
-        <div class="radio-grid">
-            <label class="radio-opt"><input type="radio" name="activity_level" value="0" required><span>💺 Sedentary</span></label>
-            <label class="radio-opt"><input type="radio" name="activity_level" value="1"><span>🚶 Light Active</span></label>
-            <label class="radio-opt"><input type="radio" name="activity_level" value="2"><span>🏃 Moderate</span></label>
-            <label class="radio-opt"><input type="radio" name="activity_level" value="3"><span>💪 Very Active</span></label>
-        </div>
-    </div>
-</div>
-
         .submit-btn {
             width: 100%; padding: 15px;
             background: linear-gradient(135deg, #028090, #02C39A);
@@ -146,6 +117,7 @@
     </a>
 </div>
 <div class="container">
+    <div id="scan-banner" style="display:none;background:#E8FAF7;border:1.5px solid #02C39A;border-radius:10px;padding:14px 18px;margin-bottom:16px;color:#028090;font-size:13.5px;font-weight:600;"></div>
 
     <div class="intro-card">
         <h2>🩺 How This Works</h2>
@@ -256,7 +228,34 @@
                     </div>
                 </div>
             </div>
+<!-- Section 5: Personal Details -->            
+<div class="form-section">
+    <div class="section-title">👤 Personal Details</div>
 
+    <div class="form-group">
+        <label class="field-label">Age</label>
+        <input type="number" name="age" min="1" max="100" placeholder="Enter your age" required
+               style="width:100%;padding:10px 13px;border:1.5px solid #D1E8E5;border-radius:8px;font-size:14px;">
+    </div>
+
+    <div class="form-group">
+        <label class="field-label">Previous Injury at this location?</label>
+        <div class="radio-grid">
+            <label class="radio-opt"><input type="radio" name="previous_injury" value="0" required><span>❌ No</span></label>
+            <label class="radio-opt"><input type="radio" name="previous_injury" value="1"><span>✅ Yes, before</span></label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="field-label">Activity Level</label>
+        <div class="radio-grid">
+            <label class="radio-opt"><input type="radio" name="activity_level" value="0" required><span>💺 Sedentary</span></label>
+            <label class="radio-opt"><input type="radio" name="activity_level" value="1"><span>🚶 Light Active</span></label>
+            <label class="radio-opt"><input type="radio" name="activity_level" value="2"><span>🏃 Moderate</span></label>
+            <label class="radio-opt"><input type="radio" name="activity_level" value="3"><span>💪 Very Active</span></label>
+        </div>
+    </div>
+</div>
             <button type="submit" class="submit-btn">🔍 Analyze My Symptoms</button>
         </form>
     </div>
@@ -283,6 +282,26 @@ document.querySelectorAll('.radio-opt input[type="radio"]').forEach(r => {
         this.closest('.radio-opt').classList.add('chosen');
     });
 });
+
+window.addEventListener('load', function() {
+    const p = new URLSearchParams(window.location.search);
+    const ml = p.get('movement_limit');
+    const angle = p.get('angle');
+    if (p.get('from_scan') && ml !== null) {
+        const labels = ['None','Mild','Moderate','Severe'];
+        const banner = document.getElementById('scan-banner');
+        banner.style.display = 'block';
+        banner.innerHTML = '📷 <strong>Scanner se data capture hua!</strong> Joint angle: <strong>' + angle + '°</strong> → Movement Limitation auto-set: <strong>' + labels[ml] + '</strong>';
+        const radio = document.querySelector('input[name="movement_limit"][value="' + ml + '"]');
+        if (radio) {
+            radio.checked = true;
+            radio.closest('.radio-opt').classList.add('chosen');
+        }
+    }
+});
+window.onload = function() {
+    updateSlider(document.getElementById('painSlider'));
+};
 </script>
 
 </body>
