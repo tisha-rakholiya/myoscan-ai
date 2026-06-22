@@ -26,8 +26,14 @@ def scan():
 def home():
     return render_template("index.html")
 
-@app.route("/result", methods=["POST"])
+ 
+@app.route("/result", methods=["GET", "POST"])
 def result():
+
+    from flask import redirect, url_for
+    if request.method == "GET":
+        return redirect(url_for("home"))
+
 
     # read form inputs
     name = request.form.get("name", "").strip()
