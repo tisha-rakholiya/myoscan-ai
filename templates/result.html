@@ -85,6 +85,14 @@
             color: #92400E; line-height: 1.6; margin-bottom: 18px;
         }
 
+        .btn-pdf {
+            display: block; width: 100%; padding: 15px;
+            background: #028090; color: #fff; text-align: center; 
+            border-radius: 10px; border: none; font-size: 15px; 
+            font-weight: bold; cursor: pointer; margin-bottom: 12px;
+        }
+        .btn-pdf:hover { background: #015F6B; }
+
         .btn-back {
             display: block; width: 100%; padding: 15px;
             background: linear-gradient(135deg, #028090, #02C39A);
@@ -120,48 +128,49 @@
             Model confidence: <strong>{{ confidence }}%</strong>
         </div>
     </div>
-    <div class="card">
-    <div class="card-title">📊 Risk Probability Breakdown</div>
-    <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px;">
-        <span style="width:95px;font-size:13px;">🟢 Low</span>
-        <div style="flex:1;background:#E0F2F0;border-radius:4px;height:22px;">
-            <div style="width:{{low_prob}}%;background:#02C39A;height:22px;border-radius:4px;transition:width 1s;"></div>
-        </div>
-        <span style="font-size:13px;font-weight:bold;color:#02C39A;width:48px;">{{low_prob}}%</span>
-    </div>
-    <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px;">
-        <span style="width:95px;font-size:13px;">🟡 Moderate</span>
-        <div style="flex:1;background:#FEF3C7;border-radius:4px;height:22px;">
-            <div style="width:{{mod_prob}}%;background:#F59E0B;height:22px;border-radius:4px;transition:width 1s;"></div>
-        </div>
-        <span style="font-size:13px;font-weight:bold;color:#F59E0B;width:48px;">{{mod_prob}}%</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;">
-        <span style="width:95px;font-size:13px;">🔴 High</span>
-        <div style="flex:1;background:#FEE2E2;border-radius:4px;height:22px;">
-            <div style="width:{{high_prob}}%;background:#EF4444;height:22px;border-radius:4px;transition:width 1s;"></div>
-        </div>
-        <span style="font-size:13px;font-weight:bold;color:#EF4444;width:48px;">{{high_prob}}%</span>
-    </div>
-</div>
 
-<div class="card">
-    <div class="card-title">🧠 Why this prediction? (Explainable AI)</div>
-    <p style="font-size:12.5px;color:#5B7470;margin-bottom:14px;">
-        Key factors the model used for this assessment:
-    </p>
-    {% for fname, fpct in top_factors %}
-    <div style="margin-bottom:12px;">
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-            <span style="font-weight:600;color:#0B3D3D;">{{ fname }}</span>
-            <span style="color:#028090;font-weight:bold;">{{ fpct }}%</span>
+    <div class="card">
+        <div class="card-title">📊 Risk Probability Breakdown</div>
+        <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+            <span style="width:95px;font-size:13px;">🟢 Low</span>
+            <div style="flex:1;background:#E0F2F0;border-radius:4px;height:22px;">
+                <div style="width:{{low_prob}}%;background:#02C39A;height:22px;border-radius:4px;transition:width 1s;"></div>
+            </div>
+            <span style="font-size:13px;font-weight:bold;color:#02C39A;width:48px;">{{low_prob}}%</span>
         </div>
-        <div style="background:#E0F2F0;border-radius:4px;height:10px;">
-            <div style="width:{{ fpct * 4 }}%;background:{{ risk_color }};height:10px;border-radius:4px;"></div>
+        <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+            <span style="width:95px;font-size:13px;">🟡 Moderate</span>
+            <div style="flex:1;background:#FEF3C7;border-radius:4px;height:22px;">
+                <div style="width:{{mod_prob}}%;background:#F59E0B;height:22px;border-radius:4px;transition:width 1s;"></div>
+            </div>
+            <span style="font-size:13px;font-weight:bold;color:#F59E0B;width:48px;">{{mod_prob}}%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <span style="width:95px;font-size:13px;">🔴 High</span>
+            <div style="flex:1;background:#FEE2E2;border-radius:4px;height:22px;">
+                <div style="width:{{high_prob}}%;background:#EF4444;height:22px;border-radius:4px;transition:width 1s;"></div>
+            </div>
+            <span style="font-size:13px;font-weight:bold;color:#EF4444;width:48px;">{{high_prob}}%</span>
         </div>
     </div>
-    {% endfor %}
-</div>
+
+    <div class="card">
+        <div class="card-title">🧠 Why this prediction? (Explainable AI)</div>
+        <p style="font-size:12.5px;color:#5B7470;margin-bottom:14px;">
+            Key factors the model used for this assessment:
+        </p>
+        {% for fname, fpct in top_factors %}
+        <div style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+                <span style="font-weight:600;color:#0B3D3D;">{{ fname }}</span>
+                <span style="color:#028090;font-weight:bold;">{{ fpct }}%</span>
+            </div>
+            <div style="background:#E0F2F0;border-radius:4px;height:10px;">
+                <div style="width:{{ fpct }}%;background:{{ risk_color }};height:10px;border-radius:4px;"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 
     <div class="card">
         <div class="card-title">🩺 Medical Advice</div>
@@ -200,15 +209,26 @@
     </div>
 
     <div class="disclaimer-box">
-        ⚠️ <strong>Disclaimer:</strong> MyoScan AI gives a preliminary risk indication only — it is <strong>not a substitute for medical diagnosis</strong>. Always consult a qualified doctor for any health concern.
+        ⚠️ <strong>Disclaimer:</strong> MyoScan AI gives a preliminary risk indication only — it is not a substitute for medical diagnosis. Always consult a qualified doctor for any health concern.
     </div>
 
-    <a href="/" class="btn-back">🔄 Take Another Assessment</a>
+    <!-- PDF REPORT FORM -->
+    <form action="/download-report" method="POST" style="margin-bottom:12px;">
+        <input type="hidden" name="name" value="{{ name }}">
+        <input type="hidden" name="location" value="{{ location }}">
+        <input type="hidden" name="risk_level" value="{{ risk_level }}">
+        <input type="hidden" name="confidence" value="{{ confidence }}">
+        <input type="hidden" name="advice" value="{{ advice }}">
+        <button type="submit" class="btn-pdf">📥 Download PDF Report</button>
+    </form>
+
+    <a href="/scan" class="btn-back">🔄 Take Another Assessment</a>
 
     <div class="footer">
-        MyoScan AI &bull; Team Code Catalyst &bull; Bharat Academix CodeQuest 2026
+        MyoScan AI • Team Code Catalyst • Bharat Academix CodeQuest 2026
     </div>
 
 </div>
+
 </body>
 </html>
